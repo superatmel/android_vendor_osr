@@ -130,18 +130,18 @@ include vendor/cm/config/themes_common.mk
 
 # Workaround for NovaLauncher zipalign fails
 PRODUCT_COPY_FILES += \
-    vendor/slim/prebuilt/common/app/NovaLauncher.apk:system/app/NovaLauncher.apk \
-    vendor/slim/prebuilt/common/app/ESFileManager.apk:system/app/ESFileManager.apk \
-    vendor/slim/prebuilt/common/app/SoundSearch.apk:system/app/SoundSearch.apk
+    vendor/cm/prebuilt/common/app/NovaLauncher.apk:system/app/NovaLauncher.apk \
+    vendor/cm/prebuilt/common/app/ESFileManager.apk:system/app/ESFileManager.apk \
+    vendor/cm/prebuilt/common/app/SoundSearch.apk:system/app/SoundSearch.apk
 
 # Copy libgif for Nova Launcher 3.0
 PRODUCT_COPY_FILES += \
-    vendor/slim/prebuilt/common/lib/libgif.so:system/lib/libgif.so
+    vendor/cm/prebuilt/common/lib/libgif.so:system/lib/libgif.so
 
 # HFM Files
 PRODUCT_COPY_FILES += \
-    vendor/slim/prebuilt/etc/hosts.alt:system/etc/hosts.alt \
-    vendor/slim/prebuilt/etc/hosts.og:system/etc/hosts.og
+    vendor/cm/prebuilt/etc/hosts.alt:system/etc/hosts.alt \
+    vendor/cm/prebuilt/etc/hosts.og:system/etc/hosts.og
 
 # Required CM packages
 PRODUCT_PACKAGES += \
