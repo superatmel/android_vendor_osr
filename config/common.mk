@@ -128,6 +128,21 @@ PRODUCT_COPY_FILES += \
 # T-Mobile theme engine
 include vendor/cm/config/themes_common.mk
 
+# Workaround for NovaLauncher zipalign fails
+PRODUCT_COPY_FILES += \
+    vendor/slim/prebuilt/common/app/NovaLauncher.apk:system/app/NovaLauncher.apk \
+    vendor/slim/prebuilt/common/app/ESFileManager.apk:system/app/ESFileManager.apk \
+    vendor/slim/prebuilt/common/app/SoundSearch.apk:system/app/SoundSearch.apk
+
+# Copy libgif for Nova Launcher 3.0
+PRODUCT_COPY_FILES += \
+    vendor/slim/prebuilt/common/lib/libgif.so:system/lib/libgif.so
+
+# HFM Files
+PRODUCT_COPY_FILES += \
+    vendor/slim/prebuilt/etc/hosts.alt:system/etc/hosts.alt \
+    vendor/slim/prebuilt/etc/hosts.og:system/etc/hosts.og
+
 # Required CM packages
 PRODUCT_PACKAGES += \
     Development \
@@ -140,21 +155,25 @@ PRODUCT_PACKAGES += \
     Basic \
     libemoji
 
-# Custom CM packages
+# Custom packages
 PRODUCT_PACKAGES += \
     Launcher3 \
-    Trebuchet \
     DSPManager \
     libcyanogen-dsp \
     audio_effects.conf \
     CMWallpapers \
     Apollo \
-    CMFileManager \
     LockClock \
-    CMUpdater \
-    CMFota \
-    CMAccount \
-    CMHome
+    PerformanceControl \
+    ScreenRecorder \
+    libscreenrecorder
+
+# Not Compile
+    #CMUpdater \
+    #CMFileManager \
+    #CMFota \
+    #CMAccount \
+    #CMHome \
 
 # CM Hardware Abstraction Framework
 PRODUCT_PACKAGES += \
