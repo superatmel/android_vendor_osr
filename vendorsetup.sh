@@ -3,4 +3,4 @@
 #    add_lunch_combo $combo
 #done
 
-add_lunch_combo cm_sirius-userdebug cm-11.0
+add_lunch_combo osr_sirius-userdebug

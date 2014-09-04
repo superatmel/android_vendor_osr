@@ -1,8 +1,22 @@
 #!/bin/sh
 #
-# Squish a CM otapackage for distribution
+# Squish a OSR otapackage for distribution
 # cyanogen
 #
+
+. $ANDROID_BUILD_TOP/vendor/osr/tools/functions
+. mensajes.sh
+OUT_TARGET_HOST=linux-x86
+export VENDOR=vendor/osr
+MODS=$VENDOR/mods
+OTAPACKAGE=$OUT/$PRODUCT_ROM_FILE-ota.zip
+REPACK=$OUT/repack.d
+REPACKOTA=$REPACK/ota
+ROMPACKAGE=$OUT/$PRODUCT_ROM_FILE.zip
+msgInfo " "
+msgInfo "Trabajando para $ALIAS"
+msgInfo " "
+
 
 OUT_TARGET_HOST=`uname -a | grep Darwin`
 if [ -z "$OUT_TARGET_HOST" ]
@@ -19,25 +33,16 @@ else
 fi
 
 if [ -z "$OUT" -o ! -d "$OUT" ]; then
-    echo "ERROR: $0 only works with a full build environment. $OUT should exist."
-    exit 1
+	echo -e $CL_RED"ERROR: $0 only works with a full build environment. $OUT should exist."$CL_RST
+	exit 1
 fi
 
-if [ "$TARGET_BUILD_TYPE" = "debug" ]; then
-    OTAPACKAGE=$OUT/${TARGET_PRODUCT}_debug-ota-$TARGET_BUILD_VARIANT.$USER.zip
-elif [ "$TARGET_BUILD_VARIANT" = "userdebug" ]; then
-    OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-eng.$USER.zip
-elif [ "$TARGET_BUILD_VARIANT" = "user" ]; then
-    OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-eng.$USER.zip
-else
-    OTAPACKAGE=$OUT/$TARGET_PRODUCT-ota-$TARGET_BUILD_VARIANT.$USER.zip
-fi
 if [ ! -f "$OTAPACKAGE" ]; then
-    echo "$OTAPACKAGE doesn't exist!";
-    exit 1
+	echo -e $CL_RED"$OTAPACKAGE doesn't exist!"$CL_RST;
+	exit 1
 fi
 
-OPTICHARGER=$ANDROID_BUILD_TOP/vendor/slim/tools/opticharger
+OPTICHARGER=$ANDROID_BUILD_TOP/vendor/osr/tools/opticharger
 QUIET=-q
 DELETE_BINS="applypatch applypatch_static check_prereq recovery updater"
 DELETE_MEDIA="*.qmg"
@@ -47,7 +52,7 @@ DELETE_GALLERY="Gallery2.apk"
 DELETE_FONTS="MTLmr3m.ttf"
 
 REPACK=$OUT/repack.d
-printf "Sanitizing environment..."
+msgWarn "Limpiando entorno..."
 rm -rf $REPACK
 mkdir -p $REPACK
 echo
@@ -57,9 +62,26 @@ echo
 mkdir $REPACK/ota
 (
 cd $REPACK/ota
-printf "Unpacking $OTAPACKAGE..."
+printf "Descomprimiendo $OTAPACKAGE..."
+echo " "
 unzip $QUIET $OTAPACKAGE
 echo
+
+# Copiado de archivos comunes
+    cp -rf $ANDROID_BUILD_TOP/$MODS/common/* $REPACKOTA/
+
+# Copiado de archivos especificos del dispositivo
+    if [ ! -f "$VENDOR/mods/terminales/$ALIAS" ]; then
+    	cp -rf $ANDROID_BUILD_TOP/$MODS/terminales/$ALIAS/. $REPACKOTA/
+	else
+msgWarn Sin personalización
+    fi
+
+# Ejecuta si existe personalizaciones específicas del dispositivo.
+    if [ -f $ANDROID_BUILD_TOP/$MODS/terminales/$ALIAS/personalizar.sh ]; then
+    	$ANDROID_BUILD_TOP/$MODS/terminales/$ALIAS/personalizar.sh $REPACKOTA
+    	rm $REPACKOTA/personalizar.sh
+    fi
 
 # Move all apks to the same directory so xargs can
 # use also with framework-res.apk. This allow process
@@ -166,36 +188,26 @@ rm -rf $REPACK/ota/system/etc/recovery-resource.dat
 #fi
 #cp -f $OUT/system/build.prop $REPACK/ota/system/build.prop
 
-# Delete Gallery2 for 5MP cameras
-CAMERARESOLUTION=`sed -n -e'/ro\.camera\.res/s/^.*=//p' $REPACK/ota/system/build.prop`
-#if [ "$CAMERARESOLUTION" = "5MP" ];then
-#   rm -f $REPACK/ota/system/app/Gallery2.apk
-#fi
-
-# Swap boot.img
-PREBUILTKERNEL=$OUT/system/slimkernel/boot.img
-if [ -e "$PREBUILTKERNEL" ];then
-   rm -f $REPACK/ota/boot.img
-   mv -f $REPACK/ota/system/slimkernel/boot.img $REPACK/ota/boot.img
-fi
 
 # Determine what to name the new signed package
-MODVERSION=`sed -n -e'/ro\.modversion/s/^.*=//p' $REPACK/ota/system/build.prop`
+MODVERSION=`sed -n -e'/ro\.osr\.version/s/^.*=//p' $REPACK/ota/system/build.prop`
 OUTFILE=$OUT/$MODVERSION.zip
-echo MODVERSION: $MODVERSION
+echo " "
+msgInfo MODVERSION:
+msgOK $MODVERSION
+echo " "
 
 # Pack it up and sign
-printf "Zipping package..."
+msgWarn "Comprimiendo paquete..."
 ( cd $REPACK/ota; zip $QUIET -r $REPACK/update.zip . )
-echo
-printf "Signing package..."
+msgWarn "Firmando paquete..."
 SECURITYDIR=$ANDROID_BUILD_TOP/build/target/product/security
 java -Xmx1024m \
 	-jar $OUT/../../../host/$OUT_TARGET_HOST/framework/signapk.jar \
 	-w $SECURITYDIR/testkey.x509.pem $SECURITYDIR/testkey.pk8 \
 	$REPACK/update.zip $OUTFILE
 echo
-printf "Cleaning up..."
+printf "Ejecutando limpieza..."
 rm -rf $REPACK
 echo
 
@@ -205,8 +217,8 @@ img=`basename $OUTFILE`
 cd `dirname $OUTFILE`
 $MD5 $img >$img.md5sum
 echo
-echo "Package complete: $OUTFILE"
-cat $img.md5sum
+echo $CL_GRN"Paquete completo: $OUTFILE"$CL_RST
+echo $CL_GRN"md5: $(cat $img.md5sum | awk '{ print $1 }')"$CL_RST
 echo
 )
 

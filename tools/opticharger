@@ -8,6 +8,7 @@
 #
 # cyanogen - shade@chemlab.org
 # ChrisSoyars - me@ctso.me
+. mensajes.sh
 
 set -e
 QUIET=1
@@ -45,7 +46,7 @@ if [ "$(which pngcrush)" != "" ];
 then
     optimize_png () {
         pngcrush -q ${BRUTECRUSH} $1 ${1}.out 1> /dev/null 2> /dev/null
-        mv ${1}.out ${1}
+        mv ${1}.out ${1} 2> /dev/null
     }
 elif [ "$(which optipng)" != "" ];
 then
@@ -82,7 +83,7 @@ fi
 if [ -e "$1" ];
 then
     NAME=`basename $1`;
-    echo "Optimizing $NAME...";
+    msgList "Optimizando"  $NAME...;
 
     if [ "$2" != "" ];
     then
