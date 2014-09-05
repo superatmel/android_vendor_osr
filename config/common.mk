@@ -101,10 +101,6 @@ PRODUCT_COPY_FILES += \
 PRODUCT_COPY_FILES += \
     vendor/osr/prebuilt/common/etc/init.d/90userinit:system/etc/init.d/90userinit
 
-# SELinux filesystem labels
-PRODUCT_COPY_FILES += \
-    vendor/osr/prebuilt/common/etc/init.d/50selinuxrelabel:system/etc/init.d/50selinuxrelabel
-
 # CM-specific init file
 PRODUCT_COPY_FILES += \
     vendor/osr/prebuilt/common/etc/init.local.rc:root/init.cm.rc
@@ -256,25 +252,26 @@ PRODUCT_VERSION_MAINTENANCE = 0
 
 TEAM_PRODUCT := SuperOSR
 TEAM_NAME := ST
-ANDROID_ALIAS_NAME := KK
+ANDROID_ALIAS_NAME := 4.4.4
 PRODUCT_VERSION_DEVICE_SPECIFIC := SuperOSR
 PRODUCT_VERSION_MAJOR := 2
 OSR_VERSION := $(shell date -u +%y%m.%d)
 
 PRODUCT_PROPERTY_OVERRIDES += \
   ro.osr.version=$(PRODUCT_ROM_FILE) \
+  ro.slim.version=$(PRODUCT_ROM_FILE) \
   ro.modversion=$(PRODUCT_ROM_FILE)
 
 -include vendor/cm-priv/keys/keys.mk
 
-CM_DISPLAY_VERSION := $(CM_VERSION)
+OSR_DISPLAY_VERSION := $(OSR_VERSION)
 
 
 # by default, do not update the recovery with system updates
 PRODUCT_PROPERTY_OVERRIDES += persist.sys.recovery_update=false
 
 PRODUCT_PROPERTY_OVERRIDES += \
-  ro.cm.display.version=$(CM_DISPLAY_VERSION)
+  ro.osr.display.version=$(OSR_DISPLAY_VERSION)
 
 -include $(WORKSPACE)/build_env/image-auto-bits.mk
 
