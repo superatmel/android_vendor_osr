@@ -13,10 +13,36 @@ OTAPACKAGE=$OUT/$PRODUCT_ROM_FILE-ota.zip
 REPACK=$OUT/repack.d
 REPACKOTA=$REPACK/ota
 ROMPACKAGE=$OUT/$PRODUCT_ROM_FILE.zip
-msgInfo " "
-msgInfo "Trabajando para $ALIAS"
-msgInfo " "
 
+# Valores por defecto
+CHANGENAME=0
+APP_GOOGLE=0
+
+#Valores específicos
+case "$ALIAS" in
+    jflte)
+	CHANGENAME=0
+	APP_GOOGLE=0
+	TERMINAL=S4
+        ;;
+    sirius)
+	CHANGENAME=1
+	APP_GOOGLE=0
+	TERMINAL=XPERIA-Z2
+        ;;
+esac
+
+if [ "$CHANGENAME" -eq 1 ];
+then
+msgInfo " "
+msgList2 "TRABAJANDO PARA" "$TERMINAL"
+msgInfo " "
+else
+msgInfo " "
+msgLis2 "TRABAJANDO PARA" "$ALIAS"
+msgErr "no has modificado el nombre de la ROM final, especifica CHANGENAME=1 en la configuracion del Valor"
+msgInfo " "
+fi
 
 OUT_TARGET_HOST=`uname -a | grep Darwin`
 if [ -z "$OUT_TARGET_HOST" ]
@@ -52,7 +78,7 @@ DELETE_GALLERY="Gallery2.apk"
 DELETE_FONTS="MTLmr3m.ttf"
 
 REPACK=$OUT/repack.d
-msgWarn "Limpiando entorno..."
+msgWarn "LIMPIANDO ENTORNO..."
 rm -rf $REPACK
 mkdir -p $REPACK
 echo
@@ -62,8 +88,7 @@ echo
 mkdir $REPACK/ota
 (
 cd $REPACK/ota
-printf "Descomprimiendo $OTAPACKAGE..."
-echo " "
+msgList1 "DESCOMPRIMIENDO" "$OTAPACKAGE..."
 unzip $QUIET $OTAPACKAGE
 echo
 
@@ -74,13 +99,23 @@ echo
     if [ ! -f "$VENDOR/mods/terminales/$ALIAS" ]; then
     	cp -rf $ANDROID_BUILD_TOP/$MODS/terminales/$ALIAS/. $REPACKOTA/
 	else
-msgWarn Sin personalización
+msgList1 "SIN PERSONALIZACION DESDE" "VENDOR/OSR/TERMINALES/MOD"
     fi
 
 # Ejecuta si existe personalizaciones específicas del dispositivo.
     if [ -f $ANDROID_BUILD_TOP/$MODS/terminales/$ALIAS/personalizar.sh ]; then
     	$ANDROID_BUILD_TOP/$MODS/terminales/$ALIAS/personalizar.sh $REPACKOTA
     	rm $REPACKOTA/personalizar.sh
+    fi
+
+# Copiado de aplicaciones extras de Google
+    if [ "$APP_GOOGLE" -eq 1 ]; then
+       msgList2 "CON" "GOOGLE GAPPS"
+	echo " "
+    cp -rf $ANDROID_BUILD_TOP/$MODS/appgoogle/* $REPACKOTA/
+	else
+       msgList2 "SIN" "GOOGLE GAPPS"
+	echo " "
     fi
 
 # Move all apks to the same directory so xargs can
@@ -191,35 +226,50 @@ rm -rf $REPACK/ota/system/etc/recovery-resource.dat
 
 # Determine what to name the new signed package
 MODVERSION=`sed -n -e'/ro\.osr\.version/s/^.*=//p' $REPACK/ota/system/build.prop`
+
+#Para cambiar el nombre del TARGET_DEVICE a uno personalizado
+if [ "$CHANGENAME" -eq 1 ];  
+then
+echo $MODVERSION | sed "s/$ALIAS/$TERMINAL/g" > $REPACK/ota/system/model
+MODEL=`cat $REPACK/ota/system/model`
+
+sed -i "s/ro.modversion=$MODVERSION/ro.modversion=$MODEL/g" $REPACK/ota/system/build.prop
+sed -i "s/ro.osr.version=$MODVERSION/ro.osr.version=$MODEL/g" $REPACK/ota/system/build.prop
+sed -i "s/ro.slim.version=$MODVERSION/ro.slim.version=$MODEL/g" $REPACK/ota/system/build.prop
+rm $REPACK/ota/system/model
+OUTFILE=$OUT/$MODEL.zip
+echo " "
+msgInfo MODVERSION:
+msgOK $MODEL
+echo " "
+else
 OUTFILE=$OUT/$MODVERSION.zip
 echo " "
 msgInfo MODVERSION:
 msgOK $MODVERSION
 echo " "
+fi
 
 # Pack it up and sign
-msgWarn "Comprimiendo paquete..."
+msgInfo "COMPRIMIENDO SISTEMA..."
 ( cd $REPACK/ota; zip $QUIET -r $REPACK/update.zip . )
-msgWarn "Firmando paquete..."
+msgInfo "FIRMANDO SISTEMA..."
 SECURITYDIR=$ANDROID_BUILD_TOP/build/target/product/security
 java -Xmx1024m \
 	-jar $OUT/../../../host/$OUT_TARGET_HOST/framework/signapk.jar \
 	-w $SECURITYDIR/testkey.x509.pem $SECURITYDIR/testkey.pk8 \
 	$REPACK/update.zip $OUTFILE
-echo
-printf "Ejecutando limpieza..."
+msgInfo "EJECUTANDO LIMPIEZA..."
 rm -rf $REPACK
-echo
 
 # Create a md5 checksum image of the repacked package
 (
 img=`basename $OUTFILE`
 cd `dirname $OUTFILE`
 $MD5 $img >$img.md5sum
-echo
-echo $CL_GRN"Paquete completo: $OUTFILE"$CL_RST
-echo $CL_GRN"md5: $(cat $img.md5sum | awk '{ print $1 }')"$CL_RST
-echo
+msgList2 "PAQUETE COMPLETO:" "$OUTFILE"
+msgList2 "md5" "$(cat $img.md5sum | awk '{ print $1 }')"$CL_RST
+echo " "
 )
 
 exit 0

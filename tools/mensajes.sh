@@ -54,4 +54,13 @@ msgStatus(){
 msgList(){
   $ECHO $YELLOW"$1: "$GREEN"$2"$ENDCOLOR
 }
+msgList1(){
+  $ECHO $WHITE"$1: "$GREEN"$2"$ENDCOLOR
+}
+msgList2(){
+  $ECHO $WHITE"$1: "$BLUEs"$2"$ENDCOLOR
+}
+msgList3(){
+  $ECHO $WHITE"$1: "$YELLOW"$2"$ENDCOLOR
+}
 

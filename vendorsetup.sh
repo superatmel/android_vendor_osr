@@ -8,4 +8,5 @@ else
    echo " Propetarios descargados anteriormente"
 fi
 
+add_lunch_combo osr_jflte-userdebug
 add_lunch_combo osr_sirius-userdebug

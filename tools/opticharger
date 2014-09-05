@@ -83,7 +83,7 @@ fi
 if [ -e "$1" ];
 then
     NAME=`basename $1`;
-    msgList "Optimizando"  $NAME...;
+    msgList3 "OPTIMIZANDO"  $NAME...;
 
     if [ "$2" != "" ];
     then
