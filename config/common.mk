@@ -124,16 +124,6 @@ PRODUCT_COPY_FILES += \
 # T-Mobile theme engine
 include vendor/osr/config/themes_common.mk
 
-# Workaround for NovaLauncher zipalign fails
-PRODUCT_COPY_FILES += \
-    vendor/osr/prebuilt/common/app/NovaLauncher.apk:system/app/NovaLauncher.apk \
-    vendor/osr/prebuilt/common/app/ESFileManager.apk:system/app/ESFileManager.apk \
-    vendor/osr/prebuilt/common/app/SoundSearch.apk:system/app/SoundSearch.apk
-
-# Copy libgif for Nova Launcher 3.0
-PRODUCT_COPY_FILES += \
-    vendor/osr/prebuilt/common/lib/libgif.so:system/lib/libgif.so
-
 # HFM Files
 PRODUCT_COPY_FILES += \
     vendor/osr/prebuilt/etc/hosts.alt:system/etc/hosts.alt \
