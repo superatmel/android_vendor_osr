@@ -233,11 +233,15 @@ sed -i "s/ro.modversion=$MODVERSION/ro.modversion=$MODEL/g" $REPACK/ota/system/b
 sed -i "s/ro.osr.version=$MODVERSION/ro.osr.version=$MODEL/g" $REPACK/ota/system/build.prop
 sed -i "s/ro.slim.version=$MODVERSION/ro.slim.version=$MODEL/g" $REPACK/ota/system/build.prop
 rm $REPACK/ota/system/model
-OUTFILE=$OUT/$MODEL.zip
+    if [ "$APP_GOOGLE" -eq 1 ]; then
+OUTFILE=$OUT/$MODEL-Gapps.zip
 echo " "
 msgInfo MODVERSION:
-msgOK $MODEL
+msgOK $MODEL-Gapps.zip
 echo " "
+else
+OUTFILE=$OUT/$MODEL.zip
+fi
 else
 OUTFILE=$OUT/$MODVERSION.zip
 echo " "
