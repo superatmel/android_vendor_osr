@@ -112,7 +112,7 @@ msgList1 "SIN PERSONALIZACION DESDE" "VENDOR/OSR/TERMINALES/MOD"
     if [ "$APP_GOOGLE" -eq 1 ]; then
        msgList2 "CON" "GOOGLE GAPPS"
 	echo " "
-    cp -rf $ANDROID_BUILD_TOP/$MODS/GOOGLE/* $REPACKOTA/
+    cp -rf $ANDROID_BUILD_TOP/$MODS/GOOGLE/* $REPACK/ota/system/
 	else
        msgList2 "SIN" "GOOGLE GAPPS"
 	echo " "
@@ -191,10 +191,6 @@ rm -rf $REPACK/ota/system/usr/srec
 # No need for recovery
 rm -rf $REPACK/ota/recovery
 rm -rf $REPACK/ota/system/etc/recovery-resource.dat
-
-# Strip modules
-[ -d $REPACK/ota/system/lib/modules ] && \
-	find $REPACK/ota/system/lib/modules -name "*.ko" -print0 | xargs -0 arm-eabi-strip --strip-unneeded
 
 # Fix LCD Density for slim
 #DEVICELCD=`sed -n -e'/ro\.sf\.lcd_density/s/^.*=//p' $OUT/system/build.prop`
