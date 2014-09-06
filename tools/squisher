@@ -241,6 +241,10 @@ msgOK $MODEL-Gapps.zip
 echo " "
 else
 OUTFILE=$OUT/$MODEL.zip
+echo " "
+msgInfo MODVERSION:
+msgOK $MODEL.zip
+echo " "
 fi
 else
 OUTFILE=$OUT/$MODVERSION.zip
