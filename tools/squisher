@@ -112,7 +112,7 @@ msgList1 "SIN PERSONALIZACION DESDE" "VENDOR/OSR/TERMINALES/MOD"
     if [ "$APP_GOOGLE" -eq 1 ]; then
        msgList2 "CON" "GOOGLE GAPPS"
 	echo " "
-    cp -rf $ANDROID_BUILD_TOP/$MODS/appgoogle/* $REPACKOTA/
+    cp -rf $ANDROID_BUILD_TOP/$MODS/GOOGLE/* $REPACKOTA/
 	else
        msgList2 "SIN" "GOOGLE GAPPS"
 	echo " "
