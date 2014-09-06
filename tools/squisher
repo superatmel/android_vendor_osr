@@ -27,7 +27,7 @@ case "$ALIAS" in
         ;;
     sirius)
 	CHANGENAME=1
-	APP_GOOGLE=0
+	APP_GOOGLE=1
 	TERMINAL=XPERIA-Z2
         ;;
 esac
