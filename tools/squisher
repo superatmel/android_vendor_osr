@@ -21,8 +21,8 @@ APP_GOOGLE=0
 #Valores específicos
 case "$ALIAS" in
     jflte)
-	CHANGENAME=0
-	APP_GOOGLE=0
+	CHANGENAME=1
+	APP_GOOGLE=1
 	TERMINAL=S4
         ;;
     sirius)
